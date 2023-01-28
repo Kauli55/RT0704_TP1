@@ -1,11 +1,25 @@
 version: '3.8'
 
 services:
- web:
-  build:
-   context: .
-  container_name: web
-  ports:
-  - 8000:5000
-  volumes:
-  - ./:/app
+  web:
+    build:
+      context: .
+    container_name: web
+    ports:
+    - "5000:5000"
+    volumes:
+    - /home/toto/git/app/app.py:/app/app.py
+    - /home/toto/git/app/static:/app/static
+    - /home/toto/git/app/templates:/app/templates
+    command: [python3, app.py]
+  
+  api:
+    build:
+      context: .
+    container_name: api
+    ports:
+    - "5001:5001"
+    volumes:
+      - /home/toto/git/app/api.py:/app/api.py
+      - /home/toto/git/app/video.json:/app/video.json
+    command: [python3, api.py]
