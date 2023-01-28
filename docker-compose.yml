@@ -12,6 +12,7 @@ services:
     - /home/toto/git/app/static:/app/static
     - /home/toto/git/app/templates:/app/templates
     command: [python3, app.py]
+    restart: unless-stopped
   
   api:
     build:
@@ -23,3 +24,4 @@ services:
       - /home/toto/git/app/api.py:/app/api.py
       - /home/toto/git/app/video.json:/app/video.json
     command: [python3, api.py]
+    restart: unless-stopped
