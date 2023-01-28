@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter un film{% endblock %}
+
+{% block content %}
+<div class="container"></div>
+  {% if data["code"]==0 %}
+    <h1>Film ajouté avec succès</h1>
+    <h2>Données du film : </h2>
+    <div class="card w-25 h-auto p-2 d-inline-block" style="border-width: 1px; border-color: black;">
+      <div class="card-body">
+        <h2 class="card-title">{{data["film"]['titre']}}</h2>
+        <p class="card-text">Année de sortie : {{data["film"]['année']}}</p>
+        <p class="card-text">Réalisateur : {{data["film"]['nomRéal']}} {{data["film"]['pnomRéal']}}</p>
+        <p class="card-text">Acteurs principaux :</p>
+        <ul>
+          {% if data["film"]["nomAct1"]!="" and data["film"]["pnomAct1"]!="" %}
+            <li>{{data["film"]["nomAct1"]}} {{data["film"]["pnomAct1"]}}</li>
+          {% endif %}
+          {% if data["film"]["nomAct2"]!="" and data["film"]["pnomAct2"]!="" %}
+            <li>{{data["film"]["nomAct2"]}} {{data["film"]["pnomAct2"]}}</li>
+          {% endif %}
+          {% if data["film"]["nomAct3"]!="" and data["film"]["pnomAct3"]!="" %}
+            <li>{{data["film"]["nomAct3"]}} {{data["film"]["pnomAct3"]}}</li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  {% else %}
+    <h1>Le film n'a pas été ajouté...</h1>
+    {% if data["code"]==1 %}
+      <h2>Tentative de création de film avec données du réalisateur incorrecte.</h2>
+    {% elif data["code"]==2 %}
+      <h2>Tentative de création de film avec donnée de l'année de sortie du film incorrecte.</h2>
+    {% elif data["code"]==3 %}
+      <h2>Tentative de création de film sans données du propriétaire de la vidéothèque.</h2>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}

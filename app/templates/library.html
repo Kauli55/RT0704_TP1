@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Library{% endblock %}
+
+{% block content %}
+<div class="container">
+{% if data %}
+    {% if name is none %}
+        <ul>
+            {% for p in data %}
+                <li><a href="{{ p[0] }}">{{ p[1] }} {{ p[0] }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h1>Library of {{ name.capitalize() }}</h1>
+        <ul>
+            {% for p in data %}
+                <li>{{ p[0] }} ({{ p[1] }}) by {{ p[3] }} {{ p[2] }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% else %}
+    <h1>No data found...</h1>
+{% endif %}
+</div>
+{% endblock %}

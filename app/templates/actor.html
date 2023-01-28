@@ -1,0 +1,9 @@
+{% extends 'base.html' %} {% block title %}Actor{% endblock %} {% block content %}
+<div class="container"></div>
+{% if data %}
+<h1>Hello {{ data }}</h1>
+{% else %}
+<h1>No actor found</h1>
+{% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Film{% endblock %}
+
+{% block content %}
+<div class="container">
+
+  {% if data and name is none %}
+
+    <h1>Tous les films enregistrés sur le site : </h1>
+    <div class="container">
+    {% for film in data %}
+      <div class="card w-25 h-auto p-2 d-inline-block" style="border-width: 1px; border-color: black;">
+        <div class="card-body">
+          <h2 class="card-title">{{film['titre']}}</h2>
+          <p class="card-text">Année de sortie : {{film['année']}}</p>
+          <p class="card-text">Réalisateur : {{film['réalisateur']['nom']}} {{film['réalisateur']['prénom']}}</p>
+          <p class="card-text">Acteurs principaux :</p>
+          <ul>
+            {% for acteur in film['acteurs'] %}
+              <li>{{acteur['nom']}} {{acteur['prénom']}}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    {% endfor %}
+    </div>
+
+  {% elif data and name is not none %}
+
+  <h1>Films du réalisateur : {{ data[0]}} {{ data[1] }} </h1>
+
+    {% if data|length <= 2 %}
+
+      <p>Aucun film d'enregistré.</p>
+
+    {% else %}
+
+      <div class="container">
+
+      {% for i in range(2,data|length) %}
+
+        <div class="card w-25 h-auto p-2 d-inline-block" style="border-width: 1px; border-color: black;">
+          <div class="card-body">
+            <h2 class="card-title">{{data[i]['titre']}}</h2>
+            <p class="card-text">Année de sortie : {{data[i]['année']}}</p>
+            <p class="card-text">Réalisateur : {{data[0]}} {{data[1]}}</p>
+            <p class="card-text">Acteurs principaux :</p>
+            <ul>
+              {% for acteur in data[i]['acteurs'] %}
+                <li>{{acteur['nom']}} {{acteur['prénom']}}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+
+      {% endfor %}
+
+      </div>
+
+    {% endif %}
+
+  {% else %}
+
+    <h1>Aucun film trouvé</h1>
+
+  {% endif %}
+</div>
+<hr>
+<div class="container">
+
+    <h1>Ajouter un film !</h1>
+    <form name= "ajoutFilm" method="POST" action="/addFilm">
+      <h2>Information sur le propriétaire du film</h2>
+      <label for="nomProp">Nom du propriétaire:</label><br>
+      <input type="text" name="nomProp"><br>
+      <label for="pnomProp">Prénom du propriétaire:</label><br>
+      <input type="text" name="pnomProp"><br>
+      <br>
+      <h2>Information sur le film</h2>
+      <label for="filmName">Nom du film:</label><br>
+      <input type="text" name="filmName"><br>
+      <label for="datePar">Date de sortie:</label><br>
+      <input type="date" name="datePar"><br>
+      <label for="nomReal">Nom du réalisateur:</label><br>
+      <input type="text" name="nomReal"><br>
+      <label for="pnomReal">Prénom du réalisateur</label><br>
+      <input type="text" name="pnomReal"><br>
+      <label for="nomAct1">Nom de l'acteur numéro 1:</label><br>
+      <input type="text" name="nomAct1"><br>
+      <label for="pnomAct1">Prénom de l'acteur numéro 1:</label><br>
+      <input type="text" name="pnomAct1"><br>
+      <label for="nomAct2">Nom de l'acteur numéro 2:</label><br>
+      <input type="text" name="nomAct2"><br>
+      <label for="pnomAct2">Prénom de l'acteur numéro 2:</label><br>
+      <input type="text" name="pnomAct2"><br>
+      <label for="nomAct3">Nom de l'acteur numéro 3:</label><br>
+      <input type="text" name="nomAct3"><br>
+      <label for="pnomAct3">Prénom de l'acteur numéro 3:</label><br>
+      <input type="text" name="pnomAct3"><br>
+      <input type="submit" value="Envoyer"><br>
+    </form>
+
+</div>
+<br>
+{% endblock %}
