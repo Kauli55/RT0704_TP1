@@ -21,6 +21,9 @@
               <li>{{acteur['nom']}} {{acteur['prénom']}}</li>
             {% endfor %}
           </ul>
+          <form name="demandeModifFilm" method="PUT" action="/demandeModif/{{film['titre']}}">
+            <input type="submit" value="Modifier">
+          </form>
         </div>
       </div>
     {% endfor %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Modification de Film{% endblock %}
+{% block content %}
+    <div class="container"></div>
+    {% if data['code']==0 %}
+        <h1>Modification du film : {{ data['titre'] }}</h1>
+        <h2>Pour ne pas modifier un champ, laissez la saisie vide.</h2>
+        <form name= "modifierFilm" method="POST" action="/modifFilm/{{data['titre']}}">
+            <h2>Information sur le film</h2>
+            <label for="filmName">Nom du film: {{data['titre']}}</label><br>
+            <input type="text" name="filmName"><br>
+            <label for="datePar">Date de sortie: {{data['année']}}</label><br>
+            <input type="date" name="datePar"><br>
+            <label for="nomReal">Nom du réalisateur: {{data['réalisateur']['nom']}}</label><br>
+            <input type="text" name="nomReal"><br>
+            <label for="pnomReal">Prénom du réalisateur: {{data['réalisateur']['prénom']}}</label><br>
+            <input type="text" name="pnomReal"><br>
+            <label for="nomAct1">Nom de l'acteur numéro 1: {{data['acteurs'][0]['nom']}}</label><br>
+            <input type="text" name="nomAct1"><br>
+            <label for="pnomAct1">Prénom de l'acteur numéro 1: {{data['acteurs'][0]['prénom']}}</label><br>
+            <input type="text" name="pnomAct1"><br>
+            <label for="nomAct2">Nom de l'acteur numéro 2: {{data['acteurs'][1]['nom']}}</label><br>
+            <input type="text" name="nomAct2"><br>
+            <label for="pnomAct2">Prénom de l'acteur numéro 2: {{data['acteurs'][1]['prénom']}}</label><br>
+            <input type="text" name="pnomAct2"><br>
+            <label for="nomAct3">Nom de l'acteur numéro 3: {{data['acteurs'][2]['nom']}}</label><br>
+            <input type="text" name="nomAct3"><br>
+            <label for="pnomAct3">Prénom de l'acteur numéro 3: {{data['acteurs'][2]['prénom']}}</label><br>
+            <input type="text" name="pnomAct3"><br>
+            <input type="submit" value="Envoyer"><br>
+          </form>
+    {% else %}
+        <h1>Film non modifiable</h1>
+    {% endif %}
+    </div>
+{% endblock %}

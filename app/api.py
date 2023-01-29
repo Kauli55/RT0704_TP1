@@ -61,7 +61,6 @@ def getFilm(name = None):
     
     #Cas où nom est renseigné --> Afficher les films du réalisateur.
     else:
-
         for proprioJson in données:
             proprio = json.loads(json.dumps(proprioJson))
             if "films" in proprio:
@@ -129,32 +128,32 @@ def createFilm():
 
     #On vérifie si les acteurs sont renseignés. Cela évite d'avoir une case acteur dans la carte quand il n'y a pas de 2ème/3ème acteur.
     if (dataFilm["nomAct1"]!="" and dataFilm["pnomAct1"]!=""):
-        acteur={"nom":dataFilm["nomAct1"],
-        "prénom":dataFilm["pnomAct1"]
+        acteur={"nom":dataFilm["nomAct1"].capitalize(),
+        "prénom":dataFilm["pnomAct1"].capitalize()
         }
         listeActeurs.append(acteur)
 
     if (dataFilm["nomAct2"]!="" and dataFilm["pnomAct2"]!=""):
-        acteur={"nom":dataFilm["nomAct2"],
-        "prénom":dataFilm["pnomAct2"]
+        acteur={"nom":dataFilm["nomAct2"].capitalize(),
+        "prénom":dataFilm["pnomAct2"].capitalize()
         }
         listeActeurs.append(acteur)
 
     if (dataFilm["nomAct3"]!="" and dataFilm["pnomAct3"]!=""):
-        acteur={"nom":dataFilm["nomAct3"],
-        "prénom":dataFilm["pnomAct3"]
+        acteur={"nom":dataFilm["nomAct3"].capitalize(),
+        "prénom":dataFilm["pnomAct3"].capitalize()
         }
         listeActeurs.append(acteur)
 
 
-    #Mise en forme du contenu.
+    #Mise en forme du contenu si tous les élements sont renseignés.
     if (reponse["code"]==0):
         contenu = {
             "titre":dataFilm['titre'],
             "année":int(dataFilm['année']),
             "réalisateur":{
-                "nom":dataFilm['nomRéal'],
-                "prénom":dataFilm['pnomRéal']
+                "nom":dataFilm['nomRéal'].capitalize(),
+                "prénom":dataFilm['pnomRéal'].capitalize()
             },
             "acteurs":listeActeurs
         }
@@ -176,8 +175,8 @@ def createFilm():
         else :
             nouvVideo={}
             nouvVideo["proprietaire"]={
-                "nom":nomProp,
-                "prénom":pnomProp
+                "nom":nomProp.capitalize(),
+                "prénom":pnomProp.capitalize()
             }
             nouvVideo["dernière_modif"]=data["dernière_modif"]
             nouvVideo["films"]=[]
@@ -192,6 +191,170 @@ def createFilm():
             file.write(objJson.decode())
 
     return json.dumps(reponse)
+
+#Recherche de film
+@api.route("/searchFilm/",methods=['GET','POST'])
+def searchFilm():
+    filmTrouve = False #Permet de voir si le film est trouvé ou non
+    iteBoucle = 0 #Itérateur de la boucle
+
+    #On récupère le nom du film à chercher
+    data = request.get_json()
+    nomFilm = data["nomFilm"].strip() #On récupère le nom du film en enlevant les espaces eventuels avant et après
+
+    #On récupère le contenu du fichier video.json
+    with open("./video.json", encoding = 'utf-8') as file:
+        d = json.load(file)
+    donneeVideo = d['videotheque']
+
+    #On cherche le film dans la vidéothèque
+    while(iteBoucle<len(donneeVideo) and filmTrouve == False):
+
+        videotheque = donneeVideo[iteBoucle]
+        if "films" in videotheque:
+            for film in videotheque["films"]:
+                nomF = film["titre"]
+                if (nomF.upper()==nomFilm.upper()):
+                    donnee=film
+                    filmTrouve=True
+
+        iteBoucle = iteBoucle + 1
+
+    #Si le film est trouvé, on crée la réponse avec toutes les données du film.
+    if filmTrouve==True:
+        reponse=donnee
+        reponse["code"]=0 #Code = 0 --> Film est trouvé
+    else:
+        reponse={"code":1} #Code = 1 --> Film pas trouvé
+    return json.dumps(reponse)
+
+#Modification d'un film
+@api.route("/modifFilm/",methods=['GET','PUT'])
+def modifFilm():
+    #On récupère les données
+    data = request.get_json()
+    titreAncFilm=data["ancienneDonnees"]["titre"]
+    donneesFilm=data["nouvelleDonnees"]
+    reponse={}
+
+    #On ouvre video.json
+    with open("./video.json", encoding = 'utf-8') as file:
+        d = json.load(file)
+    donneeVideo = d['videotheque']
+
+    #On crée le dict du film modifié pour remplacer l'ancien film dans le json
+    nouvFilm=data["ancienneDonnees"]
+    for cle, valeur in donneesFilm.items():
+        if (isinstance(valeur,str)==True and valeur!=""):
+            nouvFilm[cle]=valeur
+        elif (isinstance(valeur,dict)==True):
+            if (cle=='réalisateur'):
+                if (valeur['nom']!=""):
+                    nouvFilm[cle]['nom']=valeur['nom']
+                if (valeur['prénom']!=""):
+                    nouvFilm[cle]['prénom']=valeur['prénom']
+        elif (isinstance(valeur,list)==True):
+            i=0
+            for acteur in valeur:
+                if (acteur['nom']!=""):
+                    nouvFilm[cle][i]["nom"]=acteur["nom"]
+                if (acteur['prénom']!=""):
+                    nouvFilm[cle][i]["prénom"]=acteur["prénom"]
+                i=i+1
+
+
+    #On parcourt tous les propriétaires
+    i=0
+    for proprio in donneeVideo:
+        if "films" in proprio:
+            k=0
+            for film in proprio["films"]:
+                print(film)
+                print('----')
+                if film["titre"].upper()==titreAncFilm.upper():
+                    donneeVideo[i]["films"][k]=nouvFilm
+                    print(film)
+                k=k+1
+        i=i+1
+
+    #Mise en json du fichier afin d'avoir une bonne présentation dans le fichier video.json
+    nouvContenu={"videotheque":donneeVideo}
+    objJson=json.dumps(nouvContenu,indent=4, ensure_ascii=False).encode('utf8')
+    #Ecriture dans le fichier entier :
+    with open('./video.json', 'w', encoding = 'utf-8') as file:
+        file.write(objJson.decode())
+
+    reponse = nouvFilm
+    reponse['code']=0
+
+    return json.dumps(reponse)
+
+#Suppression d'une vidéothèque
+@api.route("/deleteLibrary/<name>", methods=['GET', 'DELETE'])
+@api.route("/deleteLibrary/<name>/", methods=['GET', 'DELETE'])
+def deleteLibrary(name=None):
+    modify = False
+    reponse={}
+    indBoucle=0
+
+    dataReq=request.get_json()
+    if dataReq['nomProp'] is not None:
+
+        with open("./video.json", "r",encoding = 'utf-8') as f:
+            data = json.load(f)
+        donnee=data["videotheque"]
+
+        while(indBoucle<len(donnee) and modify==False):
+            if donnee[indBoucle]["proprietaire"]["nom"].lower() == dataReq['nomProp'].lower():
+                del donnee[indBoucle]
+                modify = True
+            indBoucle=indBoucle+1
+    if modify == True:
+        nouvContenu={"videotheque":donnee}
+        objJson=json.dumps(nouvContenu,indent=4, ensure_ascii=False).encode('utf8')
+        with open("./video.json", "w") as f:
+            f.write(objJson.decode())
+        reponse['code']=0
+    else:
+        reponse['code']=1
+    
+    return reponse
+
+#Suppression d'un film dans une vidéothèque
+@api.route("/deleteFilm/<name>", methods=["POST", "DELETE"])
+@api.route("/deleteFilm/<name>/", methods=["POST", "DELETE"])
+def deleteFilm(name=None):
+    modify = False
+    reponse={}
+    indBoucleProprio=0
+    indBoucleFilm=0
+
+    dataReq=request.get_json()
+    if dataReq['nomProp'] is not None:
+
+        with open("./video.json", "r",encoding = 'utf-8') as f:
+            data = json.load(f)
+        donnee=data["videotheque"]
+
+        while(indBoucleProprio<len(donnee) and modify==False):
+            if (donnee[indBoucleProprio]["proprietaire"]["nom"].lower() == dataReq['nomProp'].lower() and "films" in donnee[indBoucleProprio]):
+                while(indBoucleFilm<len(donnee[indBoucleProprio]["films"]) and modify==False):
+                    if (donnee[indBoucleProprio]["films"][indBoucleFilm]["titre"].lower()==dataReq['nomFilm'].lower()):
+                        del donnee[indBoucleProprio]["films"][indBoucleFilm]
+                        modify = True
+                    indBoucleFilm=indBoucleFilm+1
+            indBoucleProprio=indBoucleProprio+1
+    
+    if modify == True:
+        nouvContenu={"videotheque":donnee}
+        objJson=json.dumps(nouvContenu,indent=4, ensure_ascii=False).encode('utf8')
+        with open("./video.json", "w") as f:
+            f.write(objJson.decode())
+        reponse['code']=0
+    else:
+        reponse['code']=1
+    
+    return reponse
 
 if __name__ == "__main__":
     api.run(debug=True, host="0.0.0.0", port=5001)

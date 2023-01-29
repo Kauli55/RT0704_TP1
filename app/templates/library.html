@@ -7,17 +7,37 @@
     {% if name is none %}
         <ul>
             {% for p in data %}
-                <li><a href="{{ p[0] }}">{{ p[1] }} {{ p[0] }}</a></li>
+                <li>
+                    <a href="{{ p[0] }}">{{ p[1] }} {{ p[0] }}</a>
+                </li>
             {% endfor %}
         </ul>
     {% else %}
-        <h1>Library of {{ name.capitalize() }}</h1>
+        <h1>Vidéothèque de {{ name.capitalize() }}</h1>
         <ul>
             {% for p in data %}
-                <li>{{ p[0] }} ({{ p[1] }}) by {{ p[3] }} {{ p[2] }}</li>
+                <li>
+                    {{ p[0] }} ({{ p[1] }}) réalisé par {{ p[3] }} {{ p[2] }}
+                    <form name="supprFilm" method="POST" action="/deleteFilm/{{p[0]}}">
+                        <input type="hidden" name="library" value="{{ name }}">
+                        <input type="hidden" name="film" value="{{ p[0] }}">
+                        <input type="submit" value="Supprimer">
+                    </form>
+                </li>
             {% endfor %}
         </ul>
+        <form name="supprLibrary" method="POST" action="/deleteLibrary/{{name}}">
+            <input type="hidden" name="name" value="{{ name }}">
+            <input type="submit" value="Supprimer Vidéothèque">
+        </form>
     {% endif %}
+{% elif data==[] and name is not none %}
+    <h1>Vidéothèque de {{ name.capitalize() }}</h1>
+    <h2>Pas de films enregistrés...</h2>
+    <form name="supprLibrary" method="POST" action="/deleteLibrary/{{name}}">
+        <input type="hidden" name="name" value="{{ name }}">
+        <input type="submit" value="Supprimer Vidéothèque">
+    </form>
 {% else %}
     <h1>No data found...</h1>
 {% endif %}

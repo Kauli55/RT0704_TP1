@@ -12,13 +12,13 @@
       <a href="/" class="nav-link px-2 text-light">Home</a>
     </div>
     <div class="d-flex flex-row">
-      <a href="/library" class="nav-link px-2 text-light">Libraries</a>
-      <a href="/film" class="nav-link px-2 text-light">Films</a>
-      <a href="/actor" class="nav-link px-2 text-light">Actors</a>
+      <a href="/library/" class="nav-link px-2 text-light">Libraries</a>
+      <a href="/film/" class="nav-link px-2 text-light">Films</a>
+      <a href="/actor/" class="nav-link px-2 text-light">Actors</a>
     </div>
     <div>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Rechercher...">
+      <form name= "rechercheFilm" method="POST" action="/searchFilm" class="d-flex">
+        <input class="form-control me-2" placeholder="Rechercher..." type="text" name="nomFilm">
         <button class="btn btn-light" type="submit">Rechercher</button>
       </form>
     </div>

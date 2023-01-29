@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block title %}Recherche de Film{% endblock %}
+{% block content %}
+<div class="container"></div>
+    {% if data["code"]==0 %}
+        <h1>Film trouvé !</h1>
+        <h2>Information du film : </h2>
+        <div class="card w-25 h-auto p-2 d-inline-block" style="border-width: 1px; border-color: black;">
+            <div class="card-body">
+              <h2 class="card-title">{{data['titre']}}</h2>
+              <p class="card-text">Année de sortie : {{data['année']}}</p>
+              <p class="card-text">Réalisateur : {{data['réalisateur']['nom']}} {{data['réalisateur']['prénom']}}</p>
+              <p class="card-text">Acteurs principaux :</p>
+              <ul>
+                {% for acteur in data['acteurs'] %}
+                  <li>{{acteur['nom']}} {{acteur['prénom']}}</li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+    {% else %}
+        <h1>Le film n'a pas été trouvé.</h1>
+    {% endif %}
+    </div>
+{% endblock %}
